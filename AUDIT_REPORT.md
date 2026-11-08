@@ -38,18 +38,18 @@ All project structures have been aligned with reference repository standards whi
 | `.github/workflows/verify-labs.yml` | GitHub Actions CI automation verifying Lab 03 automated tests | Created |
 
 ### Laboratory Directory Breakdown
-| Directory | Module Title | Implemented Endpoints & Features | Evidence / Artifacts | Implementation Status |
+| Directory | Module Title | Implemented / Planned Features | Evidence / Artifacts | Current Implementation Status |
 | :---: | :--- | :--- | :--- | :---: |
-| **`lab-01/`** | Node.js and Express Server | `GET /`, `GET /about`, `GET /time`, 404 fallback routing | 6 Screenshots in `screenshots/`, `lab-01.http` | **Completed** |
-| **`lab-02/`** | SQLite Database & CRUD Routes | Full REST CRUD (`GET /books/`, `GET /books/:id/`, `POST`, `PUT`, `DELETE`) | `database/books.db`, 7 Screenshots, `lab-02.http` | **Completed** |
-| **`lab-03/`** | REST API, Query Params & Debugging | Search, sorting, pagination, price filters, strict validation, 4 debugging exercises | `database.db`, 17 Screenshots, Postman collection, 21 Passed Tests | **Completed** |
-| **`lab-04/`** | Request Processing | Modular middleware pipeline, `GET /`, `GET /api/health`, 404 fallback | `lab-04.http`, `server.js`, `package.json` | **Starter Scaffold** |
-| **`lab-05/`** | RESTful Routing | Modular route structure foundation, health probes | `lab-05.http`, `server.js`, `package.json` | **Starter Scaffold** |
-| **`lab-06/`** | Data Validation & Errors | Request body validation baseline, standardized error responses | `lab-06.http`, `server.js`, `package.json` | **Starter Scaffold** |
-| **`lab-07/`** | Authentication & Security | Security headers, token guard baseline, CORS controls | `lab-07.http`, `server.js`, `package.json` | **Starter Scaffold** |
-| **`lab-08/`** | Persistent Data Integration | Database connection pooling foundation | `lab-08.http`, `server.js`, `package.json` | **Starter Scaffold** |
-| **`lab-09/`** | API Integration & Queries | Outbound HTTP query integration baseline | `lab-09.http`, `server.js`, `package.json` | **Starter Scaffold** |
-| **`lab-10/`** | Production Readiness | Process management baseline, health probes, graceful shutdown | `lab-10.http`, `server.js`, `package.json` | **Starter Scaffold** |
+| **`lab-01/`** | Node.js and Express Server | \`GET /\`, \`GET /about\`, \`GET /time\`, 404 fallback routing | 6 Screenshots in \`screenshots/\`, \`lab-01.http\` | **Completed** |
+| **`lab-02/`** | SQLite Database & CRUD Routes | Full REST CRUD (\`GET /books/\`, \`GET /books/:id/\`, \`POST\`, \`PUT\`, \`DELETE\`) | \`database/books.db\`, 7 Screenshots, \`lab-02.http\` | **Completed** |
+| **`lab-03/`** | REST API, Query Params & Debugging | Search, sorting, pagination, price filters, strict validation, 4 debugging exercises | \`database.db\`, 17 Screenshots, Postman collection, 21 Passed Tests | **Completed & Verified** |
+| **`lab-04/`** | Request Processing | Starter scaffold: project structure created, implementation pending | \`lab-04.http\`, \`server.js\`, \`package.json\` | **Starter Scaffold** |
+| **`lab-05/`** | RESTful Routing | Starter scaffold: project structure created, implementation pending | \`lab-05.http\`, \`server.js\`, \`package.json\` | **Starter Scaffold** |
+| **`lab-06/`** | Data Validation & Errors | Starter scaffold: project structure created, implementation pending | \`lab-06.http\`, \`server.js\`, \`package.json\` | **Starter Scaffold** |
+| **`lab-07/`** | Authentication & Security | Starter scaffold: project structure created, implementation pending | \`lab-07.http\`, \`server.js\`, \`package.json\` | **Starter Scaffold** |
+| **`lab-08/`** | Persistent Data Integration | Starter scaffold: project structure created, implementation pending | \`lab-08.http\`, \`server.js\`, \`package.json\` | **Starter Scaffold** |
+| **`lab-09/`** | API Integration & Queries | Starter scaffold: project structure created, implementation pending | \`lab-09.http\`, \`server.js\`, \`package.json\` | **Starter Scaffold** |
+| **`lab-10/`** | Production Readiness | Starter scaffold: project structure created, implementation pending | \`lab-10.http\`, \`server.js\`, \`package.json\` | **Starter Scaffold** |
 
 ---
 
