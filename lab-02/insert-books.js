@@ -1,7 +1,8 @@
-
 const sqlite3 = require("sqlite3").verbose();
+const path = require("path");
 
-const db = new sqlite3.Database("./database/books.db");
+const dbPath = path.join(__dirname, "database", "books.db");
+const db = new sqlite3.Database(dbPath);
 
 const books = [
     ["The Alchemist", "Paulo Coelho", 350, 208],
@@ -36,5 +37,5 @@ db.serialize(() => {
         }
 
         db.close();
-    });
+    } );
 });

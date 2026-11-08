@@ -1,4 +1,26 @@
-﻿node_modules/
+# Dependencies
+**/node_modules/
+
+# Environment files
+**/.env
+**/.env.*
+!**/.env.example
+
+# SQLite Temporary and Journal Files
 *.db-journal
-.env
+*.sqlite-journal
 books.db-journal
+
+# Postman Local App Cache (Root level)
+/.postman/
+/postman/
+
+# Operating System & Editor Files
+.DS_Store
+Thumbs.db
+*.log
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+.vscode/
+.idea/

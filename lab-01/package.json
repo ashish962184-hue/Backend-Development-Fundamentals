@@ -1,13 +1,19 @@
 {
   "name": "lab-01",
   "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
+  "description": "Node.js and Express server fundamentals",
+  "main": "app.js",
   "scripts": {
-    "start": "node server.js"
-},
-  "keywords": [],
-  "author": "",
+    "start": "node app.js",
+    "server": "node server.js",
+    "plain": "node plain-server.js"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "backend"
+  ],
+  "author": "SRIMURTHI ASHISH (252U1R1233)",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {

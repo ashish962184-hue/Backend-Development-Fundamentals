@@ -1,5 +1,6 @@
-﻿const express = require("express");
+const express = require("express");
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
   res.status(200).send("Welcome to the Node.js and Express server lab!");
@@ -7,8 +8,9 @@ app.get("/", (req, res) => {
 
 app.get("/about", (req, res) => {
   res.status(200).json({
-    name: "Your Name",
-    section: "Your Section"
+    name: "SRIMURTHI ASHISH",
+    registrationNumber: "252U1R1233",
+    section: "S-016"
   });
 });
 
@@ -20,6 +22,6 @@ app.use((req, res) => {
   res.status(404).send("Page Not Found");
 });
 
-app.listen(3000, () => {
-  console.log("Express Server running on port 3000");
+app.listen(PORT, () => {
+  console.log(`Express Server running on port ${PORT}`);
 });

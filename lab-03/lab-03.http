@@ -1,0 +1,170 @@
+### ==============================================================================
+### REST Client - Lab 03 REST API, Query Parameters, Validation & Debugging Tests
+### Extension: REST Client (Huachao Mao)
+### Student: SRIMURTHI ASHISH | 252U1R1233 | S-016
+### Course: Backend Development Fundamentals | Faculty: Yugandhar. | Aurora University
+### ==============================================================================
+
+@baseUrl = http://localhost:3000
+
+### ------------------------------------------------------------------------------
+### 1. Root & Discovery Endpoints
+### ------------------------------------------------------------------------------
+
+### 1.1 API Directory & Student Metadata
+GET {{baseUrl}}/
+Accept: application/json
+
+### ------------------------------------------------------------------------------
+### 2. Success Cases - Query Parameters on GET /books/
+### ------------------------------------------------------------------------------
+
+### 2.1 GET All Books (Default: limit=10, offset=0, order_by=id ASC)
+GET {{baseUrl}}/books/
+Accept: application/json
+
+### 2.2 GET Search by Title (search_q=JavaScript)
+GET {{baseUrl}}/books/?search_q=JavaScript
+Accept: application/json
+
+### 2.3 GET Sorting by Price Descending (order_by=price&order=DESC)
+GET {{baseUrl}}/books/?order_by=price&order=DESC
+Accept: application/json
+
+### 2.4 GET Pagination (limit=3&offset=3)
+GET {{baseUrl}}/books/?limit=3&offset=3
+Accept: application/json
+
+### 2.5 GET Price Range Filter (min_price=400&max_price=800)
+GET {{baseUrl}}/books/?min_price=400&max_price=800
+Accept: application/json
+
+### 2.6 GET Combined Query Filters (search_q, min/max price, sort, pagination)
+GET {{baseUrl}}/books/?search_q=the&min_price=200&max_price=900&order_by=price&order=DESC&limit=4&offset=0
+Accept: application/json
+
+### 2.7 GET Single Book by Valid ID (ID = 1)
+GET {{baseUrl}}/books/1/
+Accept: application/json
+
+### ------------------------------------------------------------------------------
+### 3. CRUD Mutations (POST, PUT, DELETE)
+### ------------------------------------------------------------------------------
+
+### 3.1 POST Create Book (201 Created)
+POST {{baseUrl}}/books/
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "System Design Interview",
+  "author": "Alex Xu",
+  "price": 850,
+  "pages": 300
+}
+
+### 3.2 PUT Update Book (200 OK)
+PUT {{baseUrl}}/books/1/
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "The Pragmatic Programmer (20th Anniversary Edition)",
+  "author": "David Thomas, Andrew Hunt",
+  "price": 799,
+  "pages": 360
+}
+
+### 3.3 DELETE Book (200 OK)
+DELETE {{baseUrl}}/books/15/
+Accept: application/json
+
+### ------------------------------------------------------------------------------
+### 4. Validation Failure Cases (400 Bad Request)
+### ------------------------------------------------------------------------------
+
+### 4.1 POST Validation Error: Missing Title
+POST {{baseUrl}}/books/
+Content-Type: application/json
+Accept: application/json
+
+{
+  "author": "Alex Xu",
+  "price": 850,
+  "pages": 300
+}
+
+### 4.2 POST Validation Error: Missing Author
+POST {{baseUrl}}/books/
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "System Design Interview",
+  "price": 850,
+  "pages": 300
+}
+
+### 4.3 POST Validation Error: Non-numeric Price
+POST {{baseUrl}}/books/
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "System Design Interview",
+  "author": "Alex Xu",
+  "price": "eight-hundred-fifty",
+  "pages": 300
+}
+
+### 4.4 POST Validation Error: Negative Price
+POST {{baseUrl}}/books/
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "System Design Interview",
+  "author": "Alex Xu",
+  "price": -100,
+  "pages": 300
+}
+
+### 4.5 POST Validation Error: Non-positive Pages
+POST {{baseUrl}}/books/
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "System Design Interview",
+  "author": "Alex Xu",
+  "price": 500,
+  "pages": -50
+}
+
+### 4.6 GET Validation Error: Invalid order_by column
+GET {{baseUrl}}/books/?order_by=invalid_column
+Accept: application/json
+
+### 4.7 GET Validation Error: Invalid order direction
+GET {{baseUrl}}/books/?order=DIAGONAL
+Accept: application/json
+
+### 4.8 GET Validation Error: Negative Limit
+GET {{baseUrl}}/books/?limit=-5
+Accept: application/json
+
+### 4.9 GET Validation Error: Non-numeric ID in Path Parameter
+GET {{baseUrl}}/books/abc/
+Accept: application/json
+
+### ------------------------------------------------------------------------------
+### 5. Not Found Cases (404 Not Found)
+### ------------------------------------------------------------------------------
+
+### 5.1 GET Book with Non-existent ID (ID = 999)
+GET {{baseUrl}}/books/999/
+Accept: application/json
+
+### 5.2 GET Unknown Route
+GET {{baseUrl}}/unknown-api-route/
+Accept: application/json
