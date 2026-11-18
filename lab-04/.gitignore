@@ -1,6 +1,24 @@
+# Dependencies
 node_modules/
+
+# Environment files
 .env
+.env.*
+
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.log
+
+# Operating System files
 .DS_Store
+Thumbs.db
+
+# SQLite database files (runtime data ignored)
+users.db
+users.db-journal
+*.db
+*.db-journal
+*.sqlite
+*.sqlite-journal

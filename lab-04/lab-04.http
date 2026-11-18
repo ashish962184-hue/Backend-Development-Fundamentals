@@ -1,34 +1,67 @@
-### ==============================================
-### REST Client - Lab 04 Express API Tests
-### Extension: REST Client (Huachao Mao)
-### ==============================================
+@baseUrl = http://localhost:5002
+@username = ashish
+@password = ExamplePassword123
 
-@baseUrl = http://localhost:3000
+### 1. Successful Registration (HTTP 201 Created)
+POST {{baseUrl}}/register/
+Content-Type: application/json
 
-### 1. Test Root Route
-GET {{baseUrl}}/
-Accept: application/json
+{
+  "username": "{{username}}",
+  "name": "Ashish",
+  "password": "{{password}}"
+}
 
-###
+### 2. Duplicate Registration (HTTP 400 Bad Request)
+POST {{baseUrl}}/register/
+Content-Type: application/json
 
-### 2. Test About / Health Route
-GET {{baseUrl}}/about
-Accept: application/json
+{
+  "username": "{{username}}",
+  "name": "Ashish Duplicate",
+  "password": "{{password}}"
+}
 
-###
+### 3. Missing Registration Fields (HTTP 400 Bad Request)
+POST {{baseUrl}}/register/
+Content-Type: application/json
 
-### 3. Test Time Route
-GET {{baseUrl}}/time
-Accept: text/plain
+{
+  "username": "newuser",
+  "name": "Incomplete Profile"
+}
 
-###
+### 4. Successful Login (HTTP 200 OK with jwt_token)
+POST {{baseUrl}}/login/
+Content-Type: application/json
 
-### 4. Test API Health (if present)
-GET {{baseUrl}}/api/health
-Accept: application/json
+{
+  "username": "{{username}}",
+  "password": "{{password}}"
+}
 
-###
+### 5. Login with Unknown Username (HTTP 400 Bad Request)
+POST {{baseUrl}}/login/
+Content-Type: application/json
 
-### 5. Test 404 Not Found Route
-GET {{baseUrl}}/non-existent-route
-Accept: text/plain
+{
+  "username": "unknown-user-999",
+  "password": "{{password}}"
+}
+
+### 6. Login with Incorrect Password (HTTP 400 Bad Request)
+POST {{baseUrl}}/login/
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "password": "WrongPassword123"
+}
+
+### 7. Login with Missing Credentials (HTTP 400 Bad Request)
+POST {{baseUrl}}/login/
+Content-Type: application/json
+
+{
+  "username": "{{username}}"
+}
