@@ -1,0 +1,135 @@
+{
+  "input": "C:\\Users\\pc\\OneDrive\\Documents\\backend development fundamentals\\BDF_Lab_03_REST_API_query_parameters_validation_debugging.docx",
+  "fonts_by_char_count": {
+    "Times New Roman": 8215
+  },
+  "direct_run_formatting_runs": 225,
+  "direct_paragraph_formatting_paragraphs": 78,
+  "heading_like_paragraphs_not_heading_style": [
+    {
+      "para_index": 10,
+      "text": "Repository Link: Link",
+      "style": "List Bullet"
+    },
+    {
+      "para_index": 108,
+      "text": "1. What is the difference between a query parameter and a path parameter?",
+      "style": "List Bullet"
+    },
+    {
+      "para_index": 110,
+      "text": "2. What does stateless mean in REST?",
+      "style": "List Bullet"
+    },
+    {
+      "para_index": 114,
+      "text": "3. Which status code is used for bad input and a missing record?",
+      "style": "List Bullet"
+    },
+    {
+      "para_index": 117,
+      "text": " Conclusion",
+      "style": "List Bullet"
+    },
+    {
+      "para_index": 184,
+      "text": "Student Name",
+      "style": "Normal"
+    },
+    {
+      "para_index": 186,
+      "text": "Roll Number",
+      "style": "Normal"
+    },
+    {
+      "para_index": 188,
+      "text": "Section",
+      "style": "Normal"
+    },
+    {
+      "para_index": 190,
+      "text": "Term",
+      "style": "Normal"
+    },
+    {
+      "para_index": 192,
+      "text": "Subject",
+      "style": "Normal"
+    },
+    {
+      "para_index": 194,
+      "text": "Module Number",
+      "style": "Normal"
+    },
+    {
+      "para_index": 196,
+      "text": "Module Title",
+      "style": "Normal"
+    },
+    {
+      "para_index": 198,
+      "text": "Submission Date",
+      "style": "Normal"
+    }
+  ],
+  "examples": {
+    "direct_run_formatting": [
+      {
+        "para_index": 1,
+        "run_text": "Lab 3: REST API, query parameters, validation, debugging",
+        "style": "Title"
+      },
+      {
+        "para_index": 2,
+        "run_text": "Backend Development Fundamentals \u00b7 Year II Term II \u00b7 Aurora \u00b7 Faculty: ",
+        "style": "Normal"
+      },
+      {
+        "para_index": 2,
+        "run_text": "Yugandhar",
+        "style": "Normal"
+      },
+      {
+        "para_index": 10,
+        "run_text": "Repository Link:",
+        "style": "List Bullet"
+      },
+      {
+        "para_index": 10,
+        "run_text": " ",
+        "style": "List Bullet"
+      }
+    ],
+    "direct_paragraph_formatting": [
+      {
+        "para_index": 10,
+        "text": "Repository Link: Link",
+        "style": "List Bullet"
+      },
+      {
+        "para_index": 88,
+        "text": "",
+        "style": "List Number"
+      },
+      {
+        "para_index": 91,
+        "text": "",
+        "style": "List Number"
+      },
+      {
+        "para_index": 93,
+        "text": "",
+        "style": "List Number"
+      },
+      {
+        "para_index": 94,
+        "text": "",
+        "style": "List Number"
+      }
+    ]
+  },
+  "notes": [
+    "Direct formatting is not always wrong, but it often causes inconsistent output when templates change.",
+    "Heading-like paragraphs not using Heading styles can break TOC and accessibility."
+  ]
+}
