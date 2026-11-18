@@ -1,9 +1,9 @@
 # Lab 04: User Registration, Login, and JWT Authentication
 
 **Student:** SRIMURTHI ASHISH
-**Registration Number:** 252U1R1233 Â· **Section:** S-016
-**Course:** Backend Development Fundamentals Â· **Year II, Term II**
-**University:** Aurora University Â· **Faculty:** Joel Prashanth D
+**Registration Number:** 252U1R1233 | **Section:** S-016
+**Course:** Backend Development Fundamentals | **Year II, Term II**
+**University:** Aurora University | **Faculty:** Joel Prashanth D
 **Module:** Secure Authentication, Password Hashing, and Token Authorization
 
 ---
@@ -33,25 +33,25 @@ Key academic and technical goals include:
 
 This application provides a backend RESTful authentication service for client applications. It manages the complete credential lifecycle across registration and login:
 
-```
+```text
 [ Client Application ]
-       â”‚
-       â”œâ”€â”€â”€ 1. POST /register/ { username, name, password } â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-       â”‚                                                                   â”‚
-       â”‚    [ Server validates fields ]                                    â”‚
-       â”‚    [ Server checks username uniqueness in SQLite ]               â”‚
-       â”‚    [ bcrypt hashes plaintext password (10 salt rounds) ]          â”‚
-       â”‚    [ SQLite stores: username, name, password_hash ]               â”‚
-       â”‚                                                                   â”‚
-       â”‚â—„â”€â”€â”€ 201 Created { "message": "User created successfully" } â”€â”€â”€â”€â”€â”€â”€â”˜
-       â”‚
-       â”œâ”€â”€â”€ 2. POST /login/ { username, password } â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-       â”‚                                                                   â”‚
-       â”‚    [ Server checks user existence in SQLite ]                     â”‚
-       â”‚    [ bcrypt compares candidate password with stored hash ]        â”‚
-       â”‚    [ Server signs JWT containing { username } payload ]           â”‚
-       â”‚                                                                   â”‚
-       â”‚â—„â”€â”€â”€ 200 OK { "jwt_token": "eyJhbGciOi..." } â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+       |
+       +---> 1. POST /register/ { username, name, password } ------------+
+       |                                                                 |
+       |    [ Server validates fields ]                                  |
+       |    [ Server checks username uniqueness in SQLite ]             |
+       |    [ bcrypt hashes plaintext password (10 salt rounds) ]        |
+       |    [ SQLite stores: username, name, password_hash ]             |
+       |                                                                 |
+       |<--- 201 Created { "message": "User created successfully" } -----+
+       |
+       +---> 2. POST /login/ { username, password } ---------------------+
+       |                                                                 |
+       |    [ Server checks user existence in SQLite ]                   |
+       |    [ bcrypt compares candidate password with stored hash ]      |
+       |    [ Server signs JWT containing { username } payload ]         |
+       |                                                                 |
+       |<--- 200 OK { "jwt_token": "eyJhbGciOi..." } --------------------+
 ```
 
 1. **User Registration:**
@@ -101,26 +101,26 @@ The project is structured cleanly to separate runtime code, automated tests, evi
 
 ```text
 lab-04/
-â”œâ”€â”€ .gitignore              # Excludes node_modules, .env, and runtime SQLite databases
-â”œâ”€â”€ lab-04.http             # Visual Studio Code REST Client test request file (7 scenarios)
-â”œâ”€â”€ package.json            # Project manifest, script commands, and dependencies
-â”œâ”€â”€ package-lock.json       # Deterministic dependency tree lockfile
-â”œâ”€â”€ README.md               # Complete technical, architectural, and educational documentation
-â”œâ”€â”€ server.js               # Main Express application, database initialization, and routes
-â”œâ”€â”€ test-runner.js          # In-process automated test suite with isolated SQLite database
-â”œâ”€â”€ screenshots/            # Visual proof of API responses, database records, and token decoding
-â”‚   â”œâ”€â”€ 01-register-success.png        # HTTP 201 Created response in Postman
-â”‚   â”œâ”€â”€ 02-register-duplicate.png      # HTTP 400 Bad Request duplicate rejection
-â”‚   â”œâ”€â”€ 03-register-validation.png     # HTTP 400 Bad Request missing fields validation
-â”‚   â”œâ”€â”€ 04-login-success.png           # HTTP 200 OK with jwt_token response
-â”‚   â”œâ”€â”€ 05-login-invalid-user.png      # HTTP 400 Bad Request unknown username error
-â”‚   â”œâ”€â”€ 06-login-wrong-password.png    # HTTP 400 Bad Request invalid password error
-â”‚   â”œâ”€â”€ 07-database-password-hash.png  # SQLite database browser showing bcrypt hash storage
-â”‚   â””â”€â”€ 08-jwt-decoded.png             # jwt.io debugger showing decoded header and payload
-â””â”€â”€ submission/             # Formal evaluation reports
-    â”œâ”€â”€ .template-style.json                   # Report template metadata
-    â”œâ”€â”€ Lab_04_Registration_Login_JWT_Report.docx  # Editable academic report
-    â””â”€â”€ Lab_04_Registration_Login_JWT_Report.pdf   # Official submission report
+|-- .gitignore              # Excludes node_modules, .env, and runtime SQLite databases
+|-- lab-04.http             # Visual Studio Code REST Client test request file (7 scenarios)
+|-- package.json            # Project manifest, script commands, and dependencies
+|-- package-lock.json       # Deterministic dependency tree lockfile
+|-- README.md               # Complete technical, architectural, and educational documentation
+|-- server.js               # Main Express application, database initialization, and routes
+|-- test-runner.js          # In-process automated test suite with isolated SQLite database
+|-- screenshots/            # Visual proof of API responses, database records, and token decoding
+|   |-- 01-register-success.png        # HTTP 201 Created response in Postman
+|   |-- 02-register-duplicate.png      # HTTP 400 Bad Request duplicate rejection
+|   |-- 03-register-validation.png     # HTTP 400 Bad Request missing fields validation
+|   |-- 04-login-success.png           # HTTP 200 OK with jwt_token response
+|   |-- 05-login-invalid-user.png      # HTTP 400 Bad Request unknown username error
+|   |-- 06-login-wrong-password.png    # HTTP 400 Bad Request invalid password error
+|   |-- 07-database-password-hash.png  # SQLite database browser showing bcrypt hash storage
+|   `-- 08-jwt-decoded.png             # jwt.io debugger showing decoded header and payload
+`-- submission/             # Formal evaluation reports
+    |-- .template-style.json                   # Report template metadata
+    |-- Lab_04_Registration_Login_JWT_Report.docx  # Editable academic report
+    `-- Lab_04_Registration_Login_JWT_Report.pdf   # Official submission report
 ```
 
 ---
@@ -133,7 +133,7 @@ Before installing and executing this project, ensure your environment meets the 
 2. **npm:** Version `9.x` or higher installed. (On Windows, use `npm.cmd` in PowerShell/CMD).
 3. **C/C++ Build Tooling (Optional for prebuilt binaries):** Standard Python 3 and Visual C++ Build Tools if native compilation is triggered for `sqlite3` or `bcrypt`. (Precompiled binaries are provided by default).
 4. **Git:** For source version control.
-5. **API Client:** Either the [VS Code REST Client Extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) or [Postman Desktop App](https://www.postman.com/downloads/).
+5. **API Client:** Either the VS Code REST Client Extension or Postman Desktop App.
 
 To verify your installed versions on Windows PowerShell, run:
 
@@ -490,18 +490,18 @@ const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
    - A salt is a sequence of cryptographically random bits generated specifically for each user and appended to the password before hashing.
    - **Why salt is essential:** If two users choose the same password (e.g., `Password123!`), their resulting hashes will be completely different. This protects against **rainbow table attacks** (precomputed tables of password hashes).
 2. **Adaptive Cost Factor (Work Factor):**
-   - The cost factor `10` represents $2^{10} = 1,024$ internal hashing iterations.
+   - The cost factor `10` represents 2^10 = 1,024 internal hashing iterations.
    - bcrypt is designed to be slow and computationally expensive, drastically impeding brute-force attempts on high-performance GPUs and ASICs.
 3. **Anatomy of a bcrypt Hash String:**
    A typical bcrypt hash in SQLite appears as follows:
    ```text
    $2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy
-   â”œâ”€â”€â”˜â”œâ”€â”€â”˜â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-     â”‚   â”‚            â”‚                          â”‚
-     â”‚   â”‚            â”‚                          â””â”€ 31 Characters: Hash Digest
-     â”‚   â”‚            â””â”€ 22 Characters: Salt
-     â”‚   â””â”€ Cost Factor (10 = 2^10 iterations)
-     â””â”€ Algorithm Identifier ($2b$ = bcrypt)
+   |---|--|----------------------|-----------------------------|
+     |   |            |                          |
+     |   |            |                          +-- 31 Characters: Hash Digest
+     |   |            +-- 22 Characters: Salt
+     |   +-- Cost Factor (10 = 2^10 iterations)
+     +-- Algorithm Identifier ($2b$ = bcrypt)
    ```
 4. **Verification with `bcrypt.compare()`:**
    - The server never extracts the original password from the hash.
@@ -513,11 +513,13 @@ const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
 
 A **JSON Web Token (JWT)** (RFC 7519) is a compact, URL-safe means of transferring claims between parties. A JWT consists of three parts separated by periods (`.`):
 
-$$\text{JWT} = \text{Header} \,.\, \text{Payload} \,.\, \text{Signature}$$
+```text
+JWT = Header . Payload . Signature
+```
 
 ```text
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFzaGlzaCIsImlhdCI6MTczMTk0NDQwMCwiZXhwIjoxNzMxOTQ4MDAwfQ.g6_6rG2rF...
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤.â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤.â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+|-----------------------------------| |------------------------------------------------------------------------| |------------|
                Header                                                Payload                                         Signature
 ```
 
@@ -545,12 +547,14 @@ Contains identity claims and token validity timestamps:
 - `exp` (Expiration Time): Unix timestamp indicating when the token expires (set to 1 hour via `{ expiresIn: "1h" }`).
 
 > [!CAUTION]
-> **Payload Visibility:** The payload is **Base64Url encoded**, NOT encrypted! Anyone with the token can decode and read its contents using tools like [jwt.io](https://jwt.io). Therefore, **never store passwords, password hashes, or confidential API keys in a JWT payload**.
+> **Payload Visibility:** The payload is **Base64Url encoded**, NOT encrypted! Anyone with the token can decode and read its contents using tools like jwt.io. Therefore, **never store passwords, password hashes, or confidential API keys in a JWT payload**.
 
 ### 3. Signature
 The signature verifies that the sender of the JWT is who it claims to be and ensures that the message was not altered in transit. It is calculated by hashing the encoded header, encoded payload, and a secret key using HMAC-SHA256:
 
-$$\text{Signature} = \text{HMACSHA256}\Big(\text{base64UrlEncode}(\text{Header}) + \text{"."} + \text{base64UrlEncode}(\text{Payload}), \, \text{SecretKey}\Big)$$
+```text
+Signature = HMACSHA256(base64UrlEncode(Header) + "." + base64UrlEncode(Payload), SecretKey)
+```
 
 If an attacker modifies the username claim in the payload, the server will detect that the newly computed signature does not match the received signature, and verification will fail immediately.
 
@@ -680,48 +684,56 @@ The following captures are authentic, unedited screenshots recorded during actua
 
 ### 1. Successful User Registration (HTTP 201 Created)
 Shows successful user creation via `POST /register/` returning status `201 Created` and confirmation message:
+
 ![Successful registration: HTTP 201](./screenshots/01-register-success.png)
 
 ---
 
 ### 2. Duplicate Username Rejection (HTTP 400 Bad Request)
 Demonstrates application and database constraint protection rejecting a duplicate username:
+
 ![Duplicate username: HTTP 400](./screenshots/02-register-duplicate.png)
 
 ---
 
 ### 3. Missing Registration Fields Validation (HTTP 400 Bad Request)
 Demonstrates rejection when required input parameters (such as password) are omitted:
+
 ![Missing registration password: HTTP 400](./screenshots/03-register-validation.png)
 
 ---
 
 ### 4. Successful Login with JWT Issuance (HTTP 200 OK)
 Shows successful authentication via `POST /login/` returning HTTP `200 OK` with a signed `jwt_token`:
+
 ![Successful login: HTTP 200 with jwt_token](./screenshots/04-login-success.png)
 
 ---
 
 ### 5. Login Rejection for Unknown Username (HTTP 400 Bad Request)
 Demonstrates authentication failure when an unregistered username is submitted:
+
 ![Unknown username: HTTP 400](./screenshots/05-login-invalid-user.png)
 
 ---
 
 ### 6. Login Rejection for Incorrect Password (HTTP 400 Bad Request)
 Demonstrates credential verification failure when a valid username is provided with an incorrect password:
+
 ![Incorrect password: HTTP 400](./screenshots/06-login-wrong-password.png)
 
 ---
 
 ### 7. SQLite Database Table Inspecting Password Hashes
 Inspection of the `users.db` SQLite table showing that passwords are stored strictly as 60-character bcrypt hashes:
+
 ![SQLite users table stores bcrypt hashes](./screenshots/07-database-password-hash.png)
 
 ---
 
 ### 8. Decoded JWT Structure (jwt.io)
 Verification of the signed token inside the JWT debugger, displaying the header algorithm (`HS256`) and payload claims (`username`, `iat`, `exp`):
+
 ![JWT decoder showing header and username claim](./screenshots/08-jwt-decoded.png)
 
 ---
@@ -748,7 +760,7 @@ The complete lab report documents are located in the `submission/` directory:
 ## 21. Security Considerations
 
 1. **Never Persist Plaintext Passwords:**
-   Passwords must never be logged, printed to consoles, returned in HTTP responses, or saved in plaintext. Always use adaptive algorithms like bcrypt with a salt round factor $\ge 10$.
+   Passwords must never be logged, printed to consoles, returned in HTTP responses, or saved in plaintext. Always use adaptive algorithms like bcrypt with a salt round factor >= 10.
 2. **Never Place Sensitive Data in JWTs:**
    JWT payloads are Base64Url-encoded and completely transparent to anyone holding the token. **Never place passwords, password hashes, secrets, or credit card numbers inside a JWT payload.**
 3. **Environment-Specific Secret Keys:**
