@@ -1,10 +1,19 @@
 # Lab 04: User Registration, Login, and JWT Authentication
 
-**Student:** SRIMURTHI ASHISH
-**Registration Number:** 252U1R1233 | **Section:** S-016
-**Course:** Backend Development Fundamentals | **Year II, Term II**
-**University:** Aurora University | **Faculty:** Joel Prashanth D
-**Module:** Secure Authentication, Password Hashing, and Token Authorization
+## Student Information
+
+| Field               | Details                                                          |
+| ------------------- | ---------------------------------------------------------------- |
+| Student Name        | SRIMURTHI ASHISH                                                 |
+| Registration Number | 252U1R1233                                                       |
+| Section             | S-016                                                            |
+| Course              | Backend Development Fundamentals                                 |
+| Academic Year       | Year II, Term II                                                 |
+| University          | Aurora University                                                |
+| Faculty Name        | Yugundhar Gurjalwar                                              |
+| Lab Number          | Lab 04                                                           |
+| Lab Title           | User Registration, Login, and JWT Authentication                 |
+| Module              | Secure Authentication, Password Hashing, and Token Authorization |
 
 ---
 
@@ -14,128 +23,102 @@
 
 ---
 
-## 2. Lab Objective
+## 2. Objective
 
-The primary objective of this laboratory project is to build and evaluate a secure, stateless authentication backend using Node.js, Express, SQLite, bcrypt, and JSON Web Tokens (JWT).
+The primary objective of this laboratory project is to implement, test, and document a secure, stateless authentication backend using Node.js, Express, SQLite, bcrypt, and JSON Web Tokens (JWT).
 
-Key academic and technical goals include:
-- Designing and initializing an embedded relational database schema with data integrity constraints (`PRIMARY KEY`, `NOT NULL`, `UNIQUE`).
-- Implementing user registration (`POST /register/`) with input validation and duplicate prevention.
-- Implementing one-way password hashing using `bcrypt.hash()` with an adaptive work factor before persisting credentials to storage.
-- Implementing user login (`POST /login/`) with verification via `bcrypt.compare()`.
-- Generating cryptographically signed JSON Web Tokens (`jwt.sign()`) upon successful authentication containing only minimal identity claims.
-- Ensuring zero credential leakage across all API responses and token payloads.
-- Creating an isolated, automated test suite to verify route handlers and schema constraints deterministically.
-
----
-
-## 3. What This Application Does
-
-This application provides a backend RESTful authentication service for client applications. It manages the complete credential lifecycle across registration and login:
-
-```text
-[ Client Application ]
-       |
-       +---> 1. POST /register/ { username, name, password } ------------+
-       |                                                                 |
-       |    [ Server validates fields ]                                  |
-       |    [ Server checks username uniqueness in SQLite ]             |
-       |    [ bcrypt hashes plaintext password (10 salt rounds) ]        |
-       |    [ SQLite stores: username, name, password_hash ]             |
-       |                                                                 |
-       |<--- 201 Created { "message": "User created successfully" } -----+
-       |
-       +---> 2. POST /login/ { username, password } ---------------------+
-       |                                                                 |
-       |    [ Server checks user existence in SQLite ]                   |
-       |    [ bcrypt compares candidate password with stored hash ]      |
-       |    [ Server signs JWT containing { username } payload ]         |
-       |                                                                 |
-       |<--- 200 OK { "jwt_token": "eyJhbGciOi..." } --------------------+
-```
-
-1. **User Registration:**
-   - Validates that `username`, `name`, and `password` are provided as non-empty strings.
-   - Queries the database to prevent duplicate account registration.
-   - Transforms the plain text password into an irreversible cryptographic hash using `bcrypt`.
-   - Stores the user record safely in SQLite and returns HTTP `201 Created`.
-   - Never exposes passwords or password hashes in the response.
-
-2. **User Authentication (Login):**
-   - Validates incoming credentials.
-   - Retrieves the registered user record by `username`.
-   - Rejects non-existent usernames with HTTP `400 Bad Request`.
-   - Validates the password against the stored bcrypt hash using `bcrypt.compare()`.
-   - Rejects mismatched passwords with HTTP `400 Bad Request`.
-   - Generates a cryptographically signed JWT with a 1-hour expiration.
-   - Returns the token in the response body as `{ "jwt_token": "<token>" }`.
-
-3. **Defensive Routing:**
-   - Parameterizes all SQL queries to eliminate SQL injection risks.
-   - Enforces unique constraints at both the application logic level and the database schema level.
-   - Catches unknown paths with a global 404 JSON handler.
-   - Masks internal database runtime exceptions with generic 500 error responses.
+Specific technical objectives include:
+- Designing and initializing an embedded relational database schema (`users`) with `PRIMARY KEY`, `NOT NULL`, and `UNIQUE` constraints.
+- Implementing a user registration endpoint (`POST /register/`) with strict input validation, duplicate username rejection, and one-way password hashing using `bcrypt.hash()`.
+- Implementing a user login endpoint (`POST /login/`) that verifies credentials using `bcrypt.compare()`.
+- Generating cryptographically signed JSON Web Tokens (`jwt.sign()`) upon successful authentication, containing minimal identity claims and standard expiration.
+- Ensuring zero credential leakage across all API responses, token payloads, and documentation.
+- Building an isolated automated test suite that validates route handlers and database constraints deterministically.
 
 ---
 
-## 4. Technologies Used
+## 3. Concepts Covered
 
-| Technology / Package | Version | Purpose in Lab 04 |
+### Authentication vs. Authorization
+- **Authentication** verifies identity (who the user is), such as checking credentials during login.
+- **Authorization** verifies permissions (what an authenticated user is permitted to do). This lab focuses on authentication.
+
+### Password Hashing vs. Encryption
+- **Hashing (One-Way):** A mathematical transformation that converts plaintext into a fixed-length string (digest). It is computationally infeasible to invert a hash back into the original plaintext. Passwords must always be hashed so that a database breach does not expose raw credentials.
+- **Encryption (Two-Way):** A reversible transformation that scrambles plaintext into ciphertext using an encryption key, allowing authorized parties with the decryption key to restore the original plaintext. Encryption is used for confidential data transmission, not password storage.
+
+### Salting and bcrypt Cost Factors
+- **Cryptographic Salt:** A randomly generated byte sequence appended to each password before hashing. Salting ensures that identical passwords produce completely different hash outputs, protecting against precomputed rainbow table attacks.
+- **Adaptive Cost Factor:** The bcrypt cost factor (set to `10` in this lab) defines the key expansion work scale ($2^{\text{cost}}$ iterations in the underlying Eksblowfish algorithm), requiring $2^{10} = 1,024$ rounds. This work factor can be increased over time as hardware speeds improve to keep brute-force guessing computationally prohibitive.
+
+### Stateless Token-Based Authentication
+- Instead of maintaining session state in server memory or database tables, the server issues a signed JSON Web Token (JWT) to the client upon successful login.
+- The client attaches the token to subsequent requests. The server validates the token cryptographically using a signing secret.
+
+### Defensive Database Design
+- **Data Integrity Constraints:** The SQLite schema enforces `UNIQUE` on usernames and `NOT NULL` on required fields.
+- **Parameterized SQL Queries:** Parameter placeholders (`?`) separate SQL command syntax from user-supplied data, helping protect against SQL injection vulnerabilities.
+
+### Role of CORS
+- **Cross-Origin Resource Sharing (CORS)** is a browser security mechanism that governs whether web applications running at one origin can access resources from a different origin. It is not an authentication or authorization mechanism, nor does it secure endpoints against non-browser clients (such as curl or Postman).
+
+---
+
+## 4. Technologies and Dependencies
+
+| Package / Tool | Version | Role in Lab 04 |
 |---|---|---|
-| **Node.js** | v18+ / v20+ / v26+ | Asynchronous event-driven JavaScript runtime environment |
-| **Express.js** (`express`) | `^5.3.0` | Minimalist web framework for routing and middleware management |
+| **Node.js** | v18+ / v20+ / v26+ | Asynchronous JavaScript runtime environment (tested on v26.13.0) |
+| **Express.js** (`express`) | `^5.3.0` | HTTP routing framework and middleware pipeline |
 | **SQLite3** (`sqlite3`) | `^6.0.1` | Native SQLite driver for embedded relational database storage |
-| **SQLite Bridge** (`sqlite`) | `^5.1.1` | Promise-based wrapper around `sqlite3` enabling async/await queries |
-| **bcrypt** (`bcrypt`) | `^6.0.0` | Adaptive password hashing function and verification utility |
-| **jsonwebtoken** (`jsonwebtoken`) | `^9.0.2` | RFC 7519 implementation for signing and verifying JSON Web Tokens |
-| **CORS** (`cors`) | `^2.8.6` | Cross-Origin Resource Sharing middleware enabling external access |
-| **dotenv** (`dotenv`) | `^18.0.9` | Environment variable management from `.env` files |
-| **Nodemon** (`nodemon`) | `^3.1.14` | Development tool that monitors file changes and restarts the server |
-| **Postman / REST Client** | Latest | HTTP client tools used for API interaction and evidence capture |
+| **SQLite Bridge** (`sqlite`) | `^5.1.1` | Promise-based wrapper around `sqlite3` enabling `async`/`await` |
+| **bcrypt** (`bcrypt`) | `^6.0.0` | Password hashing and verification library using Eksblowfish |
+| **jsonwebtoken** (`jsonwebtoken`) | `^9.0.2` | RFC 7519 implementation for signing and verifying tokens |
+| **cors** (`cors`) | `^2.8.6` | Middleware enabling browser cross-origin requests |
+| **dotenv** (`dotenv`) | `^18.0.9` | Environment variable loader |
+| **nodemon** (`nodemon`) | `^3.1.14` | Development utility for auto-restarting the server on file edits |
+| **Node.js Assert** (`node:assert`) | Built-in | Native assertion library powering the automated test harness |
 
 ---
 
-## 5. Project Folder Structure
-
-The project is structured cleanly to separate runtime code, automated tests, evidence screenshots, and academic submission documents:
+## 5. Project Directory Structure
 
 ```text
 lab-04/
-|-- .gitignore              # Excludes node_modules, .env, and runtime SQLite databases
-|-- lab-04.http             # Visual Studio Code REST Client test request file (7 scenarios)
-|-- package.json            # Project manifest, script commands, and dependencies
-|-- package-lock.json       # Deterministic dependency tree lockfile
-|-- README.md               # Complete technical, architectural, and educational documentation
-|-- server.js               # Main Express application, database initialization, and routes
+|-- .gitignore              # Excludes dependencies, logs, and SQLite database files
+|-- lab-04.http             # REST Client request suite (7 executable scenarios)
+|-- package.json            # Project manifest, npm scripts, and dependency definitions
+|-- package-lock.json       # Exact dependency lockfile for reproducible builds
+|-- README.md               # Technical, architectural, and submission documentation
+|-- server.js               # Express application server and route implementations
 |-- test-runner.js          # In-process automated test suite with isolated SQLite database
-|-- screenshots/            # Visual proof of API responses, database records, and token decoding
-|   |-- 01-register-success.png        # HTTP 201 Created response in Postman
+|-- screenshots/            # Verified visual evidence from testing
+|   |-- 01-register-success.png        # HTTP 201 Created response
 |   |-- 02-register-duplicate.png      # HTTP 400 Bad Request duplicate rejection
 |   |-- 03-register-validation.png     # HTTP 400 Bad Request missing fields validation
 |   |-- 04-login-success.png           # HTTP 200 OK with jwt_token response
 |   |-- 05-login-invalid-user.png      # HTTP 400 Bad Request unknown username error
 |   |-- 06-login-wrong-password.png    # HTTP 400 Bad Request invalid password error
-|   |-- 07-database-password-hash.png  # SQLite database browser showing bcrypt hash storage
+|   |-- 07-database-password-hash.png  # SQLite database inspection showing bcrypt hashes
 |   `-- 08-jwt-decoded.png             # jwt.io debugger showing decoded header and payload
-`-- submission/             # Formal evaluation reports
+`-- submission/             # Formal evaluation documents
     |-- .template-style.json                   # Report template metadata
     |-- Lab_04_Registration_Login_JWT_Report.docx  # Editable academic report
-    `-- Lab_04_Registration_Login_JWT_Report.pdf   # Official submission report
+    `-- Lab_04_Registration_Login_JWT_Report.pdf   # Submission-ready report
 ```
 
 ---
 
 ## 6. Prerequisites
 
-Before installing and executing this project, ensure your environment meets the following requirements:
+Ensure your development environment meets these requirements:
 
-1. **Node.js:** Version `18.x`, `20.x`, or higher installed. (Verified compatible with Node.js `v26.13.0`).
-2. **npm:** Version `9.x` or higher installed. (On Windows, use `npm.cmd` in PowerShell/CMD).
-3. **C/C++ Build Tooling (Optional for prebuilt binaries):** Standard Python 3 and Visual C++ Build Tools if native compilation is triggered for `sqlite3` or `bcrypt`. (Precompiled binaries are provided by default).
-4. **Git:** For source version control.
-5. **API Client:** Either the VS Code REST Client Extension or Postman Desktop App.
+1. **Node.js:** v18.x LTS, v20.x LTS, or later installed.
+2. **npm:** v9.x or later installed (on Windows PowerShell, execute using `npm.cmd`).
+3. **Git:** Version control client installed.
+4. **API Client:** VS Code REST Client extension or Postman Desktop App.
 
-To verify your installed versions on Windows PowerShell, run:
+Verify installed versions:
 
 ```powershell
 node --version
@@ -147,68 +130,52 @@ git --version
 
 ## 7. Installation Instructions
 
-Follow these exact steps from your terminal to install the project dependencies:
+Execute these commands from Windows PowerShell:
 
 ```powershell
-# 1. Open Windows PowerShell or your preferred command line
-# 2. Navigate to the lab-04 directory inside the repository
+# Navigate to the lab-04 directory
 cd C:\Users\pc\Backend-Development-Fundamentals\lab-04
 
-# 3. Install project dependencies using npm.cmd
+# Install declared dependencies
 npm.cmd install
 ```
 
-### What happens during installation?
-- `npm.cmd install` reads `package.json` and `package-lock.json`.
-- Installs production dependencies (`express`, `bcrypt`, `jsonwebtoken`, `sqlite`, `sqlite3`, `cors`, `dotenv`) and developer dependencies (`nodemon`) into `node_modules/`.
-- Verifies binary integrity using SHA-512 integrity hashes recorded in `package-lock.json`.
+`npm.cmd install` resolves the dependency tree defined in `package.json`, installs packages into `node_modules/`, and verifies integrity against `package-lock.json`.
 
 ---
 
-## 8. How to Start the Server
+## 8. Commands to Start the Application
 
-You can run the server in either development mode (with auto-reload) or standard production mode:
-
-### Option A: Development Mode (Recommended for testing and editing)
-Uses `nodemon` to automatically restart the server whenever you edit `server.js`:
-
+### Development Mode (with automatic reload on file changes)
 ```powershell
 npm.cmd run dev
 ```
 
-### Option B: Standard Start Mode
-Runs the server directly through Node.js:
-
+### Standard Start Mode
 ```powershell
 npm.cmd start
 ```
 
-### Option C: Direct Node Execution
+### Direct Node.js Execution
 ```powershell
 node server.js
 ```
 
-### Expected Startup Output
-When the database connection opens and the server starts listening, you will observe:
+### Server URL and Port
+- **Configured Port:** `5002` (configurable via `process.env.PORT`).
+- **Base URL:** `http://localhost:5002`
+- **Database Path:** `users.db` in the `lab-04` directory (configurable via `process.env.DB_PATH`).
 
+Expected startup output:
 ```text
 Lab 04 authentication API listening on port 5002
 ```
 
 ---
 
-## 9. Server URL and Port
+## 9. Database Structure
 
-- **Configured Port:** `5002` (configurable via the `PORT` environment variable).
-- **Default Base URL:** `http://localhost:5002`
-- **Network Interface:** `127.0.0.1:5002` (Localhost loopback).
-- **Database File:** `lab-04/users.db` (created automatically upon first startup, configurable via `DB_PATH`).
-
----
-
-## 10. Database Schema
-
-The application uses an embedded **SQLite** relational database. On server startup, `initializeDatabase()` automatically checks for the existence of the `users` table and executes the following Data Definition Language (DDL) command if missing:
+The server automatically initializes an embedded SQLite database (`users.db`) on startup. It executes the following Data Definition Language (DDL) command if the table does not exist:
 
 ```sql
 CREATE TABLE IF NOT EXISTS users (
@@ -219,26 +186,25 @@ CREATE TABLE IF NOT EXISTS users (
 );
 ```
 
-### Field Definitions and Constraints
+### Schema Column Specifications
 
-| Column Name | Data Type | Constraints | Description | Security Consideration |
+| Column Name | SQL Type | Constraints | Purpose | Security Protection |
 |---|---|---|---|---|
-| `id` | `INTEGER` | `PRIMARY KEY AUTOINCREMENT` | Unique integer row identifier | Prevents row collisions |
-| `username` | `TEXT` | `NOT NULL`, `UNIQUE` | Case-sensitive unique account handle | Prevents duplicate user registrations |
-| `name` | `TEXT` | `NOT NULL` | Display name of the user | Sanitized before insertion |
-| `password` | `TEXT` | `NOT NULL` | 60-character bcrypt cryptographic hash | **Never plaintext.** Always hashed with salt |
+| `id` | `INTEGER` | `PRIMARY KEY AUTOINCREMENT` | Unique row identifier | Prevents row collisions |
+| `username` | `TEXT` | `NOT NULL UNIQUE` | Unique user account handle | Enforces account uniqueness at database level |
+| `name` | `TEXT` | `NOT NULL` | User display name | Trimmed and validated before storage |
+| `password` | `TEXT` | `NOT NULL` | 60-character bcrypt hash string | Passwords are never stored as plaintext |
 
-### Parameterized Query Security
-All queries interact with the database using parameterized placeholders (`?`). Values are bound separately by SQLite, preventing attackers from injecting arbitrary SQL commands:
+All queries in `server.js` use parameterized statements with `?` placeholders:
 
 ```javascript
-// Parameterized lookup preventing SQL injection
+// Parameterized user lookup
 const user = await db.get(
   "SELECT username, password FROM users WHERE username = ?",
   [username.trim()]
 );
 
-// Parameterized insertion
+// Parameterized user insertion
 await db.run(
   "INSERT INTO users (username, name, password) VALUES (?, ?, ?)",
   [username.trim(), name.trim(), passwordHash]
@@ -247,62 +213,55 @@ await db.run(
 
 ---
 
-## 11. Registration API Documentation
+## 10. Registration Endpoint Documentation
 
 - **Path:** `/register/`
-- **Method:** `POST`
+- **HTTP Method:** `POST`
 - **Content-Type:** `application/json`
-- **Purpose:** Creates a new user profile, verifies username availability, hashes the plaintext password, and persists the record.
-
-### Request Headers
-| Header | Value | Required |
-|---|---|---|
-| `Content-Type` | `application/json` | Yes |
+- **Purpose:** Registers a new user, hashes their password, and saves the record in SQLite.
 
 ### Request Body Parameters
-| Field | Type | Required | Description |
-|---|---|---|---|
-| `username` | `string` | Yes | Unique login handle. Must be a non-empty string. |
-| `name` | `string` | Yes | Full or display name of the user. |
-| `password` | `string` | Yes | Plaintext password (will be hashed with bcrypt). |
 
-### Response Codes and Behaviors
-- **`201 Created`**: User was successfully registered.
-- **`400 Bad Request`**: Any required field is missing or empty, OR the username already exists.
-- **`500 Internal Server Error`**: Unexpected database error occurred.
+| Field | Type | Required | Validation Rule |
+|---|---|---|---|
+| `username` | `string` | Yes | Non-empty string after trimming. Must be unique. |
+| `name` | `string` | Yes | Non-empty string after trimming. |
+| `password` | `string` | Yes | Non-empty string after trimming. Hashed before storage. |
+
+### Response Behaviors
+- **`201 Created`**: User created successfully. Password and password hash are omitted from response.
+- **`400 Bad Request`**: Missing required fields OR duplicate username already exists.
+- **`500 Internal Server Error`**: Unexpected database failure (masked with generic error message).
 
 ---
 
-## 12. Login API Documentation
+## 11. Login Endpoint Documentation
 
 - **Path:** `/login/`
-- **Method:** `POST`
+- **HTTP Method:** `POST`
 - **Content-Type:** `application/json`
-- **Purpose:** Authenticates user credentials and issues a signed JSON Web Token upon verification.
-
-### Request Headers
-| Header | Value | Required |
-|---|---|---|
-| `Content-Type` | `application/json` | Yes |
+- **Purpose:** Authenticates user credentials and issues a signed JSON Web Token.
 
 ### Request Body Parameters
-| Field | Type | Required | Description |
+
+| Field | Type | Required | Validation Rule |
 |---|---|---|---|
-| `username` | `string` | Yes | The registered user handle. |
-| `password` | `string` | Yes | The plaintext password to test against the stored hash. |
+| `username` | `string` | Yes | Registered user handle. |
+| `password` | `string` | Yes | Plaintext password tested against stored hash. |
 
 ### Verification Logic
-1. Checks that both `username` and `password` are present non-empty strings.
-2. Queries the `users` table for `username`. If no matching row is found, immediately returns HTTP `400 Bad Request` (`{"error": "Invalid username"}`).
-3. Invokes `bcrypt.compare(password, user.password)`. If the hash check fails, returns HTTP `400 Bad Request` (`{"error": "Invalid password"}`).
-4. If the check succeeds, invokes `jwt.sign()` with payload `{ username: user.username }`, secret key, and 1-hour expiration.
-5. Returns HTTP `200 OK` with the token string.
+1. Validates that both `username` and `password` are non-empty strings.
+2. Queries the database for the given username. If not found, returns HTTP `400 Bad Request` (`{"error": "Invalid username"}`).
+3. Calls `bcrypt.compare(password, user.password)` to verify the candidate password against the stored bcrypt hash.
+4. If the comparison fails, returns HTTP `400 Bad Request` (`{"error": "Invalid password"}`).
+5. If valid, signs a JWT containing only `{ username: user.username }` with a 1-hour expiration.
+6. Returns HTTP `200 OK` with `{ "jwt_token": "<jwt-token>" }`.
 
 ---
 
-## 13. Example Request and Response JSON
+## 12. Request and Response Examples
 
-### Scenario 1: Successful Registration
+### 1. Successful Registration
 **Request:**
 ```http
 POST /register/ HTTP/1.1
@@ -315,8 +274,7 @@ Content-Type: application/json
   "password": "ExamplePassword123"
 }
 ```
-
-**Response (HTTP 201 Created):**
+**Response (`201 Created`):**
 ```json
 {
   "message": "User created successfully"
@@ -325,7 +283,7 @@ Content-Type: application/json
 
 ---
 
-### Scenario 2: Duplicate Username Registration Attempt
+### 2. Duplicate Username Registration Attempt
 **Request:**
 ```http
 POST /register/ HTTP/1.1
@@ -338,8 +296,7 @@ Content-Type: application/json
   "password": "ExamplePassword123"
 }
 ```
-
-**Response (HTTP 400 Bad Request):**
+**Response (`400 Bad Request`):**
 ```json
 {
   "error": "Username already exists"
@@ -348,7 +305,7 @@ Content-Type: application/json
 
 ---
 
-### Scenario 3: Missing Registration Fields
+### 3. Missing Registration Fields
 **Request:**
 ```http
 POST /register/ HTTP/1.1
@@ -357,11 +314,10 @@ Content-Type: application/json
 
 {
   "username": "newuser",
-  "name": "Incomplete Profile"
+  "name": "Incomplete User"
 }
 ```
-
-**Response (HTTP 400 Bad Request):**
+**Response (`400 Bad Request`):**
 ```json
 {
   "error": "username, name, and password are required"
@@ -370,7 +326,7 @@ Content-Type: application/json
 
 ---
 
-### Scenario 4: Successful Login
+### 4. Successful Login
 **Request:**
 ```http
 POST /login/ HTTP/1.1
@@ -382,17 +338,16 @@ Content-Type: application/json
   "password": "ExamplePassword123"
 }
 ```
-
-**Response (HTTP 200 OK):**
+**Response (`200 OK`):**
 ```json
 {
-  "jwt_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFzaGlzaCIsImlhdCI6MTczMTk0NDQwMCwiZXhwIjoxNzMxOTQ4MDAwfQ.g6..."
+  "jwt_token": "<jwt-token>"
 }
 ```
 
 ---
 
-### Scenario 5: Login with Unknown Username
+### 5. Login with Unknown Username
 **Request:**
 ```http
 POST /login/ HTTP/1.1
@@ -400,12 +355,11 @@ Host: localhost:5002
 Content-Type: application/json
 
 {
-  "username": "non-existent-user",
+  "username": "unknown-user-999",
   "password": "ExamplePassword123"
 }
 ```
-
-**Response (HTTP 400 Bad Request):**
+**Response (`400 Bad Request`):**
 ```json
 {
   "error": "Invalid username"
@@ -414,7 +368,7 @@ Content-Type: application/json
 
 ---
 
-### Scenario 6: Login with Incorrect Password
+### 6. Login with Incorrect Password
 **Request:**
 ```http
 POST /login/ HTTP/1.1
@@ -423,11 +377,10 @@ Content-Type: application/json
 
 {
   "username": "ashish",
-  "password": "WrongPassword999"
+  "password": "WrongPassword123"
 }
 ```
-
-**Response (HTTP 400 Bad Request):**
+**Response (`400 Bad Request`):**
 ```json
 {
   "error": "Invalid password"
@@ -436,14 +389,33 @@ Content-Type: application/json
 
 ---
 
-### Scenario 7: Route Not Found (404 Fallback)
+### 7. Login with Missing Credentials
 **Request:**
 ```http
-GET /api/unknown-endpoint HTTP/1.1
+POST /login/ HTTP/1.1
 Host: localhost:5002
+Content-Type: application/json
+
+{
+  "username": "ashish"
+}
+```
+**Response (`400 Bad Request`):**
+```json
+{
+  "error": "username and password are required"
+}
 ```
 
-**Response (HTTP 404 Not Found):**
+---
+
+### Fallback: Unmapped Route
+**Request:**
+```http
+GET /api/unknown HTTP/1.1
+Host: localhost:5002
+```
+**Response (`404 Not Found`):**
 ```json
 {
   "error": "Route not found"
@@ -452,89 +424,39 @@ Host: localhost:5002
 
 ---
 
-## 14. HTTP Status Codes
+## 13. Validation and Error Handling
 
-| Status Code | Meaning | When It Is Used in Lab 04 |
-|---|---|---|
-| **`200 OK`** | Request succeeded | Returned on successful `POST /login/` alongside `{ "jwt_token": "..." }`. |
-| **`201 Created`** | Resource successfully created | Returned on successful `POST /register/` after the user is saved. |
-| **`400 Bad Request`** | Client input error | Returned for missing fields, duplicate username, unknown user, or incorrect password. |
-| **`404 Not Found`** | Endpoint does not exist | Returned by the centralized fallback handler when an unmapped route is requested. |
-| **`500 Internal Server Error`** | Unhandled server exception | Returned if an unhandled SQLite database error or system exception occurs. |
-
----
-
-## 15. Password Hashing Explanation
-
-Understanding password storage requires clarifying the fundamental distinction between **Hashing** and **Encryption**:
-
-### Hashing vs. Encryption
-
-| Concept | Hashing (Used for Passwords) | Encryption (Used for Confidential Data) |
-|---|---|---|
-| **Directionality** | **One-Way Function** (Irreversible). It is mathematically infeasible to turn a hash back into the original password. | **Two-Way Function** (Reversible). Plaintext can be encrypted into ciphertext and decrypted back into plaintext using a key. |
-| **Primary Goal** | **Integrity & Verification.** Verifies that user input matches without ever knowing or saving the original plaintext. | **Confidentiality.** Protects data during transmission or storage while allowing authorized parties with the key to recover it. |
-| **Vulnerability if Stolen** | If a hashed database is breached, attackers **cannot decrypt** hashes; they must guess passwords via brute-force dictionary attacks. | If an encrypted database is breached and the decryption key is compromised, all data is immediately read in plaintext. |
-| **Standard Algorithm** | **bcrypt**, Argon2id, PBKDF2, scrypt. | AES-256-GCM, RSA, ChaCha20. |
-
-### How bcrypt Works
-
-This lab uses **bcrypt** with a salt round factor of `10`:
-
-```javascript
-const BCRYPT_ROUNDS = 10;
-const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
-```
-
-1. **Cryptographic Salt:**
-   - A salt is a sequence of cryptographically random bits generated specifically for each user and appended to the password before hashing.
-   - **Why salt is essential:** If two users choose the same password (e.g., `Password123!`), their resulting hashes will be completely different. This protects against **rainbow table attacks** (precomputed tables of password hashes).
-2. **Adaptive Cost Factor (Work Factor):**
-   - The cost factor `10` represents 2^10 = 1,024 internal hashing iterations.
-   - bcrypt is designed to be slow and computationally expensive, drastically impeding brute-force attempts on high-performance GPUs and ASICs.
-3. **Anatomy of a bcrypt Hash String:**
-   A typical bcrypt hash in SQLite appears as follows:
-   ```text
-   $2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy
-   |---|--|----------------------|-----------------------------|
-     |   |            |                          |
-     |   |            |                          +-- 31 Characters: Hash Digest
-     |   |            +-- 22 Characters: Salt
-     |   +-- Cost Factor (10 = 2^10 iterations)
-     +-- Algorithm Identifier ($2b$ = bcrypt)
-   ```
-4. **Verification with `bcrypt.compare()`:**
-   - The server never extracts the original password from the hash.
-   - Instead, `bcrypt.compare(candidatePassword, storedHash)` extracts the salt and work factor directly from the stored hash, hashes the candidate password using those exact parameters, and performs a constant-time comparison to prevent timing attacks.
+| Condition | Handled By | HTTP Status | Response Body |
+|---|---|---|---|
+| Missing registration fields | `requiredString()` validation check | `400 Bad Request` | `{"error": "username, name, and password are required"}` |
+| Duplicate username | Pre-check query + `SQLITE_CONSTRAINT_UNIQUE` catch | `400 Bad Request` | `{"error": "Username already exists"}` |
+| Missing login fields | `requiredString()` validation check | `400 Bad Request` | `{"error": "username and password are required"}` |
+| Unregistered username | Database query returned no matching row | `400 Bad Request` | `{"error": "Invalid username"}` |
+| Incorrect password | `bcrypt.compare()` returned `false` | `400 Bad Request` | `{"error": "Invalid password"}` |
+| Undefined route | Centralized Express fallback middleware | `404 Not Found` | `{"error": "Route not found"}` |
+| Unhandled database error | Route `try/catch` block | `500 Internal Server Error` | `{"error": "Internal server error"}` |
 
 ---
 
-## 16. JWT Structure and Explanation
+## 14. JWT Explanation
 
-A **JSON Web Token (JWT)** (RFC 7519) is a compact, URL-safe means of transferring claims between parties. A JWT consists of three parts separated by periods (`.`):
-
-```text
-JWT = Header . Payload . Signature
-```
+A JSON Web Token (JWT) is a compact, URL-safe token format consisting of three parts separated by periods (`.`):
 
 ```text
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFzaGlzaCIsImlhdCI6MTczMTk0NDQwMCwiZXhwIjoxNzMxOTQ4MDAwfQ.g6_6rG2rF...
-|-----------------------------------| |------------------------------------------------------------------------| |------------|
-               Header                                                Payload                                         Signature
+<base64-header> . <base64-payload> . <signature>
 ```
 
 ### 1. Header
-Contains the token metadata, including the signing algorithm and token type:
+Identifies the token type and cryptographic signing algorithm:
 ```json
 {
   "alg": "HS256",
   "typ": "JWT"
 }
 ```
-*Encoded via Base64Url.*
 
 ### 2. Payload (Claims)
-Contains identity claims and token validity timestamps:
+Contains user claims and standard timestamps:
 ```json
 {
   "username": "ashish",
@@ -542,40 +464,52 @@ Contains identity claims and token validity timestamps:
   "exp": 1731948000
 }
 ```
-- `username`: Application-specific claim identifying the authenticated user.
-- `iat` (Issued At): Unix timestamp indicating when the token was signed.
-- `exp` (Expiration Time): Unix timestamp indicating when the token expires (set to 1 hour via `{ expiresIn: "1h" }`).
+- `username`: Custom application claim identifying the authenticated user.
+- `iat`: "Issued At" Unix epoch timestamp.
+- `exp`: "Expiration Time" Unix epoch timestamp (set to 1 hour via `{ expiresIn: "1h" }`).
 
-> [!CAUTION]
-> **Payload Visibility:** The payload is **Base64Url encoded**, NOT encrypted! Anyone with the token can decode and read its contents using tools like jwt.io. Therefore, **never store passwords, password hashes, or confidential API keys in a JWT payload**.
+> **Important Security Principle:** A JWT is **digitally signed, not encrypted**. The payload is Base64Url-encoded and can be easily read by anyone holding the token. Therefore, **passwords, password hashes, and sensitive secrets must never be placed in a JWT payload**.
 
 ### 3. Signature
-The signature verifies that the sender of the JWT is who it claims to be and ensures that the message was not altered in transit. It is calculated by hashing the encoded header, encoded payload, and a secret key using HMAC-SHA256:
+The signature is generated by taking the encoded header, encoded payload, and a secret key, then applying the HMAC-SHA256 algorithm:
 
 ```text
-Signature = HMACSHA256(base64UrlEncode(Header) + "." + base64UrlEncode(Payload), SecretKey)
+Signature = HMACSHA256(base64Url(Header) + "." + base64Url(Payload), <development-secret>)
 ```
 
-If an attacker modifies the username claim in the payload, the server will detect that the newly computed signature does not match the received signature, and verification will fail immediately.
+The signature prevents tampering: if any party alters the payload (such as changing the username claim), the signature verification fails.
 
 ---
 
-## 17. Automated Testing Instructions and Actual Results
+## 15. Testing Instructions
 
-### Architecture of `test-runner.js`
-The automated test runner is designed for complete isolation, speed, and determinism:
-- **Zero Port Collisions:** It dispatches mock requests directly to Express's router stack in-process. It does not bind to a local TCP socket, allowing tests to run even if another server instance is already running on port 5002 or if loopback sockets are restricted.
-- **Isolated SQLite Instance:** Each test run creates an ephemeral temporary directory (`os.tmpdir()/lab-04-XXXXXX/users.db`), runs all tests, and safely cleans up and closes database handles in a `finally` block.
-- **No External Testing Framework Dependency:** Uses Node.js native `node:assert/strict`.
-
-### Running the Test Suite
-From the `lab-04` directory, run:
+### Automated In-Process Test Runner
+The project includes a standalone automated test harness in `test-runner.js`:
 
 ```powershell
+# From the lab-04 directory:
 npm.cmd test
 ```
 
-### Actual Execution Output
+#### Test Runner Architecture
+- **In-Process Dispatch:** Dispatches requests directly to Express route handlers without binding to a local network port, preventing TCP port conflicts.
+- **Database Isolation:** Creates an isolated temporary SQLite database in the system temp directory (`os.tmpdir()/lab-04-XXXXXX/users.db`) for each test run.
+- **Zero Pollution:** Safely closes database handles and deletes temporary test directories in a `finally` block, leaving the persistent `users.db` completely untouched.
+
+### Manual Testing with Postman
+1. Start the server: `npm.cmd start`.
+2. Send `POST http://localhost:5002/register/` with `username`, `name`, and `password`. Verify HTTP 201 Created.
+3. Resend the exact same request. Verify HTTP 400 Bad Request with `"Username already exists"`.
+4. Send `POST http://localhost:5002/login/` with matching credentials. Verify HTTP 200 OK and receipt of `jwt_token`.
+5. Test invalid username and incorrect password requests. Verify HTTP 400 Bad Request in both cases.
+6. Inspect the received token on [jwt.io](https://jwt.io) to verify header and username claim.
+
+---
+
+## 16. Test Results Based on Actual Execution
+
+Actual execution of `npm.cmd test` inside `lab-04`:
+
 ```text
 > lab-04@1.0.0 test
 > node test-runner.js
@@ -595,208 +529,110 @@ PASS login without credentials returns 400
 11 passed, 0 failed.
 ```
 
-### Breakdown of the 11 Assertions
+### Coverage Breakdown
 
-| # | Test Name | Target Requirement Verified |
-|---|---|---|
-| 1 | `user table initializes with required unique columns` | Verifies schema columns (`id`, `username`, `name`, `password`), NOT NULL constraints, and UNIQUE index. |
-| 2 | `successful registration returns 201 without password/hash` | Verifies HTTP 201 Created and confirms neither password nor hash is leaked. |
-| 3 | `duplicate username returns 400` | Attempts registering the same username twice; verifies HTTP 400 Bad Request. |
-| 4 | `registration missing username returns 400` | Omits `username`; verifies HTTP 400 Bad Request. |
-| 5 | `registration missing name returns 400` | Omits `name`; verifies HTTP 400 Bad Request. |
-| 6 | `registration missing password returns 400` | Omits `password`; verifies HTTP 400 Bad Request. |
-| 7 | `database stores a bcrypt hash and no plaintext password` | Queries SQLite; checks bcrypt regex `/^\$2[aby]\$/` and verifies `bcrypt.compare()` returns true. |
-| 8 | `successful login returns JWT with only username application claim` | Verifies HTTP 200, checks `jwt_token`, decodes payload keys (`exp`, `iat`, `username`), and verifies signature. |
-| 9 | `unknown username returns 400 and no token` | Submits unregistered username; verifies HTTP 400 and absence of token. |
-| 10 | `incorrect password returns 400 and no token` | Submits invalid password; verifies HTTP 400 and absence of token. |
-| 11 | `login without credentials returns 400` | Submits empty login body; verifies HTTP 400 Bad Request. |
-
----
-
-## 18. Manual Postman Testing Instructions
-
-To manually test the server using Postman:
-
-1. **Start the API Server:**
-   ```powershell
-   npm.cmd start
-   ```
-   Ensure the console shows: `Lab 04 authentication API listening on port 5002`.
-
-2. **Step 1: Test Successful Registration**
-   - **Method:** `POST`
-   - **URL:** `http://localhost:5002/register/`
-   - **Headers:** `Content-Type: application/json`
-   - **Body (raw JSON):**
-     ```json
-     {
-       "username": "ashish",
-       "name": "Ashish",
-       "password": "ExamplePassword123"
-     }
-     ```
-   - **Expected Status:** `201 Created`
-   - **Expected Body:** `{"message":"User created successfully"}`
-
-3. **Step 2: Test Duplicate Registration**
-   - Click **Send** again with the exact same body.
-   - **Expected Status:** `400 Bad Request`
-   - **Expected Body:** `{"error":"Username already exists"}`
-
-4. **Step 3: Test Missing Registration Fields**
-   - Omit the `password` property.
-   - **Expected Status:** `400 Bad Request`
-   - **Expected Body:** `{"error":"username, name, and password are required"}`
-
-5. **Step 4: Test Successful Login**
-   - **Method:** `POST`
-   - **URL:** `http://localhost:5002/login/`
-   - **Body (raw JSON):**
-     ```json
-     {
-       "username": "ashish",
-       "password": "ExamplePassword123"
-     }
-     ```
-   - **Expected Status:** `200 OK`
-   - **Expected Body:** `{"jwt_token":"<signed_token_string>"}`
-
-6. **Step 5: Test Unknown Username**
-   - Change `username` to `"non-existent-user"`.
-   - **Expected Status:** `400 Bad Request`
-   - **Expected Body:** `{"error":"Invalid username"}`
-
-7. **Step 6: Test Incorrect Password**
-   - Change `password` to `"WrongPassword123"`.
-   - **Expected Status:** `400 Bad Request`
-   - **Expected Body:** `{"error":"Invalid password"}`
-
-8. **Step 7: Inspect Decoded JWT on jwt.io**
-   - Copy the `jwt_token` received in Step 4.
-   - Navigate to [https://jwt.io](https://jwt.io).
-   - Paste the token into the **Encoded** box and verify the decoded header (`HS256`) and payload (`username: "ashish"`).
+| # | Assertion | Verification Target | Status |
+|---|---|---|---|
+| 1 | Table initialization | Verifies `users` table columns, NOT NULL constraints, and unique index | PASS |
+| 2 | Successful registration | Verifies HTTP 201 response and confirms no password/hash leakage | PASS |
+| 3 | Duplicate username | Verifies HTTP 400 rejection on duplicate username insertion | PASS |
+| 4 | Missing username | Verifies HTTP 400 rejection when username is omitted | PASS |
+| 5 | Missing name | Verifies HTTP 400 rejection when name is omitted | PASS |
+| 6 | Missing password | Verifies HTTP 400 rejection when password is omitted | PASS |
+| 7 | Password hash storage | Queries SQLite and verifies stored password matches bcrypt format `/^\$2[aby]\$/` | PASS |
+| 8 | Successful login | Verifies HTTP 200, JWT structure, username claim, and signature validity | PASS |
+| 9 | Unknown username | Verifies HTTP 400 and ensures no token is returned | PASS |
+| 10 | Incorrect password | Verifies HTTP 400 and ensures no token is returned | PASS |
+| 11 | Missing login credentials | Verifies HTTP 400 rejection when login credentials are missing | PASS |
 
 ---
 
-## 19. Screenshots and Evidence
+## 17. Screenshot Evidence
 
-The following captures are authentic, unedited screenshots recorded during actual server execution and Postman testing:
+All screenshot evidence files are located in `screenshots/` and verified:
 
 ### 1. Successful User Registration (HTTP 201 Created)
-Shows successful user creation via `POST /register/` returning status `201 Created` and confirmation message:
+Shows successful user creation via `POST /register/` returning HTTP `201 Created`:
 
 ![Successful registration: HTTP 201](./screenshots/01-register-success.png)
 
 ---
 
 ### 2. Duplicate Username Rejection (HTTP 400 Bad Request)
-Demonstrates application and database constraint protection rejecting a duplicate username:
+Demonstrates rejection of duplicate username registrations:
 
 ![Duplicate username: HTTP 400](./screenshots/02-register-duplicate.png)
 
 ---
 
 ### 3. Missing Registration Fields Validation (HTTP 400 Bad Request)
-Demonstrates rejection when required input parameters (such as password) are omitted:
+Demonstrates rejection when required input parameters are omitted:
 
-![Missing registration password: HTTP 400](./screenshots/03-register-validation.png)
+![Missing registration fields: HTTP 400](./screenshots/03-register-validation.png)
 
 ---
 
 ### 4. Successful Login with JWT Issuance (HTTP 200 OK)
-Shows successful authentication via `POST /login/` returning HTTP `200 OK` with a signed `jwt_token`:
+Shows successful authentication returning HTTP `200 OK` with a signed `jwt_token`:
 
 ![Successful login: HTTP 200 with jwt_token](./screenshots/04-login-success.png)
 
 ---
 
 ### 5. Login Rejection for Unknown Username (HTTP 400 Bad Request)
-Demonstrates authentication failure when an unregistered username is submitted:
+Demonstrates rejection when an unregistered username is submitted:
 
 ![Unknown username: HTTP 400](./screenshots/05-login-invalid-user.png)
 
 ---
 
 ### 6. Login Rejection for Incorrect Password (HTTP 400 Bad Request)
-Demonstrates credential verification failure when a valid username is provided with an incorrect password:
+Demonstrates credential verification failure when an incorrect password is provided:
 
 ![Incorrect password: HTTP 400](./screenshots/06-login-wrong-password.png)
 
 ---
 
 ### 7. SQLite Database Table Inspecting Password Hashes
-Inspection of the `users.db` SQLite table showing that passwords are stored strictly as 60-character bcrypt hashes:
+Database inspection confirming passwords are saved strictly as salted bcrypt hashes:
 
 ![SQLite users table stores bcrypt hashes](./screenshots/07-database-password-hash.png)
 
 ---
 
 ### 8. Decoded JWT Structure (jwt.io)
-Verification of the signed token inside the JWT debugger, displaying the header algorithm (`HS256`) and payload claims (`username`, `iat`, `exp`):
+Verification of the signed token inside the JWT debugger displaying header and username claim:
 
 ![JWT decoder showing header and username claim](./screenshots/08-jwt-decoded.png)
 
 ---
 
-### Formal Academic Submission Deliverables
-The complete lab report documents are located in the `submission/` directory:
+### Formal Submission Deliverables
 - [Lab 04 Report (DOCX)](./submission/Lab_04_Registration_Login_JWT_Report.docx)
 - [Lab 04 Report (PDF)](./submission/Lab_04_Registration_Login_JWT_Report.pdf)
 
 ---
 
-## 20. Common Errors and Solutions
+## 18. Security Considerations
 
-| Symptom / Error Message | Root Cause | Solution |
-|---|---|---|
-| `Error: listen EADDRINUSE: address already in use :::5002` | Another server instance or node process is already listening on port 5002. | Check running processes via PowerShell: `Get-NetTCPConnection -LocalPort 5002`. Stop the conflicting process with `Stop-Process -Id <PID> -Force` or configure a custom port: `$env:PORT="5003"; npm.cmd start`. |
-| `SQLITE_CONSTRAINT: UNIQUE constraint failed: users.username` | Attempting to insert a username that already exists in SQLite. | Handled gracefully in `server.js` by checking `SELECT id FROM users` first and catching `SQLITE_CONSTRAINT_UNIQUE`, returning HTTP 400. |
-| `SyntaxError: Expected property name or '}' in JSON` | Request body passed to Postman or curl contains malformed JSON or unescaped quotes. | Ensure all keys and strings are enclosed in double quotes (`"`) and commas are properly placed. |
-| `Cannot read properties of undefined (reading 'username')` | The incoming request body was not parsed by Express. | Ensure `app.use(express.json())` middleware is registered **before** defining route endpoints in `server.js`. |
-| `npm audit` reports 10 vulnerabilities (picomatch, minimatch) | Deep dependency ReDoS advisories in dev dependencies (`nodemon` -> `chokidar`) and `sqlite3` build dependencies. | Do not run destructive `npm audit fix --force` as it introduces breaking major version changes. These vulnerabilities affect development tooling, not production runtime request parsing. |
+1. **Passwords are Never Plaintext:** Plaintext passwords are never logged, stored, or returned. Hashes are generated using bcrypt with salt factor 10.
+2. **JWT Payloads are Visible:** JWT payloads are Base64Url-encoded, not encrypted. Passwords and sensitive secrets are never placed in the payload.
+3. **Environment-Specific Secrets:** In production, signing keys must be loaded from secure environment variables (`process.env.JWT_SECRET`) rather than hard-coded constants.
+4. **Parameterized SQL Queries:** All SQL queries use parameter placeholders (`?`), preventing user input from altering query structure.
+5. **User Enumeration Awareness:** The lab distinguishes between `"Invalid username"` and `"Invalid password"` to test specific error handling paths. In high-security production environments, generic messages (such as `"Invalid username or password"`) are recommended to prevent account enumeration.
 
 ---
 
-## 21. Security Considerations
+## 19. Known Limitations
 
-1. **Never Persist Plaintext Passwords:**
-   Passwords must never be logged, printed to consoles, returned in HTTP responses, or saved in plaintext. Always use adaptive algorithms like bcrypt with a salt round factor >= 10.
-2. **Never Place Sensitive Data in JWTs:**
-   JWT payloads are Base64Url-encoded and completely transparent to anyone holding the token. **Never place passwords, password hashes, secrets, or credit card numbers inside a JWT payload.**
-3. **Environment-Specific Secret Keys:**
-   In this academic lab, a development-only secret string (`lab-04-development-only-secret-change-before-deployment`) is embedded for consistent evaluation. In production, the secret must be generated using high-entropy random bytes (`crypto.randomBytes(64).toString('hex')`) and loaded strictly via environment variables (`process.env.JWT_SECRET`).
-4. **Defense Against SQL Injection:**
-   All queries in `server.js` utilize parameterized SQL placeholders (`?`). String concatenation (`"SELECT * FROM users WHERE username = '" + username + "'"`) is strictly prohibited.
-5. **Mitigating User Enumeration:**
-   In this academic lab, the API distinguishes between `"Invalid username"` and `"Invalid password"` to test specific error pathways. In high-security production environments, both conditions should return a unified error message (such as `"Invalid username or password"`) to prevent malicious actors from enumerating valid account usernames.
+- **Local Academic Project:** The application is configured for local evaluation on `http://localhost:5002` and is not deployed to cloud infrastructure.
+- **Hardcoded Development Secret:** Uses a development signing secret placeholder for reproducible academic grading.
+- **Embedded SQLite Storage:** The single-file database (`users.db`) is ideal for local development but is not intended for horizontally scaled cloud environments.
+- **Stateless Expiration without Revocation:** Issued JWTs remain valid until their 1-hour expiration timestamp; no server-side token revocation or blocklist is implemented.
+- **Transitive Dependency Advisories:** `npm.cmd audit` reports 10 transitive ReDoS advisories in development tooling (`nodemon` -> `chokidar` -> `picomatch`, `sqlite3` -> `node-gyp` -> `tinyglobby` -> `picomatch`). Destructive `npm audit fix --force` was avoided to preserve stability and avoid breaking major version changes in dev tooling.
 
 ---
 
-## 22. Limitations and Deployment Status
+## 20. Conclusion
 
-- **Deployment Status:** **Not Deployed to Public Cloud (Local Execution Only).**
-  - This project is an offline academic development implementation intended to run locally on `http://localhost:5002`. No live cloud hosting URL is claimed or active.
-- **Development Secret Key:**
-  - Uses an explicitly hard-coded development signing key for reproducible grading. It is unsuitable for production deployment.
-- **SQLite Single-File Storage:**
-  - The local database `users.db` is an embedded file on disk. While ideal for learning and standalone testing, it is not suited for horizontally autoscaling cloud deployments where multiple container instances require a centralized database (such as PostgreSQL or MySQL).
-- **Stateless Expiration without Revocation:**
-  - Standard JWTs are stateless. Once issued, a token remains valid until its 1-hour expiration timestamp expires. There is no server-side token blacklist or revocation list implemented in this lab.
-
----
-
-## 23. Learning Outcomes
-
-Through completing Lab 04, the following core software engineering and backend competencies were acquired:
-1. **Asynchronous Architecture:** Gained proficiency in coordinating asynchronous database queries and bcrypt hashing calls using modern JavaScript `async`/`await`.
-2. **Cryptographic Primitives:** Learned the mathematical and security distinctions between one-way salted hashing and two-way reversible encryption.
-3. **Relational Constraints:** Designed an SQLite schema leveraging `NOT NULL` and `UNIQUE` constraints to enforce data integrity at the database engine level.
-4. **Token-Based Authentication:** Understood the mechanics of JSON Web Tokens, including header metadata, payload claims, base64url encoding, and HMAC-SHA256 signature verification.
-5. **Defensive Programming:** Implemented strict input validation, sanitized database parameters, and centralized error handling to ensure reliable API responses.
-6. **Deterministic Testing:** Constructed an automated test suite that tests route handlers in-process against disposable database instances without port conflicts or state corruption.
-
----
-
-## 24. Conclusion
-
-Lab 04 successfully establishes a secure, robust user registration and login service adhering to modern backend security standards. Plaintext passwords are never stored or exposed; instead, they are protected with salted bcrypt hashes. Successful logins yield cryptographically verifiable JSON Web Tokens that safely identify the user without compromising credentials. All 11 automated test assertions pass deterministically, and complete manual Postman verification confirms the functional accuracy of the implementation.
+Lab 04 establishes a fully functional, secure user registration and login service adhering to modern backend principles. Passwords are protected using salted bcrypt hashes, and authenticated users receive cryptographically verifiable JSON Web Tokens containing minimal identity claims. All 11 automated test assertions pass deterministically, and complete screenshot and report deliverables are verified for academic submission.

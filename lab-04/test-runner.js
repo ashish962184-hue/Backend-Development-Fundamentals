@@ -93,6 +93,8 @@ async function main() {
     });
     await test("login without credentials returns 400", async () => {
       assert.equal((await request("/login/", { username: TEST_USER.username })).status, 400);
+      assert.equal((await request("/login/", { password: TEST_USER.password })).status, 400);
+      assert.equal((await request("/login/", {})).status, 400);
     });
     console.log(`\n${results.length} passed, 0 failed.`);
   } finally {
